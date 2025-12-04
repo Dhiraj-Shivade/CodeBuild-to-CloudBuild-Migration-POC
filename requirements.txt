@@ -1,0 +1,4 @@
+# requirements.txt
+# This minimal file is needed for 'pip install -r requirements.txt' to work.
+Pillow
+numpy
