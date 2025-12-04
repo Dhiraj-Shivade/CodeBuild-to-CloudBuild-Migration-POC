@@ -1,0 +1,32 @@
+version: 0.2
+
+phases:
+  # install:
+  #   runtime-versions:
+  #     python: 3.8
+  pre_build:
+    commands:
+      - echo "Waiting for 5 minutes before running the build phase..."
+      - sleep 300
+  build:
+    commands:
+      - cd ./annotation-pipeline
+      # Install ffmpeg for H.264 video encoding (browser-compatible)
+      - yum install -y ffmpeg || apt-get install -y ffmpeg || echo "ffmpeg installation skipped"
+      - pip install -r requirements.txt
+      - python3 annotations.py
+  post_build:
+    commands:
+      - ls
+      - echo "Checking predict/ directory before running script..."
+      - ls -R predict/
+cache:
+  paths:
+    - '/root/.cache/pip/**/*'
+artifacts:
+  files:
+    - frames/*
+    - predict/*
+    - inspection.csv
+  base-directory: 'annotation-pipeline'
+  name: artifacts
