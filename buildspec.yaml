@@ -1,11 +1,15 @@
 steps:
 
 # ----------------------------------------------------
-# Step 1 : Create the local cache directory
+# Step 0 — Create the local cache directory
 # ----------------------------------------------------
-- name: "gcr.io/cloud-builders/gcloud"  # Use gcloud builder for shell commands
-  args: ["mkdir", "-p", "/workspace/pip-cache"]
+- name: "gcr.io/cloud-builders/gcloud" # Use the working builder image
+  entrypoint: "bash"                   # <--- FIX 1: Set the entrypoint to 'bash'
+  args:
+    - "-c"
+    - "mkdir -p /workspace/pip-cache"  # <--- FIX 2: Run mkdir inside the shell
 
+    
 # ----------------------------------------------------
 # Step 1 — Restore pip cache from GCS (Now this step will work)
 # ----------------------------------------------------
