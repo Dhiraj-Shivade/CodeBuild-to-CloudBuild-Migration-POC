@@ -1,19 +1,9 @@
 steps:
-# ----------------------------------------------------
-# Step 0 — Restore pip cache from GCS
-# ----------------------------------------------------
-- name: gcr.io/cloud-builders/gsutil
-  args:
-    [
-      "rsync", "-r",
-      "gs://bucket-pip-cache/pip/",
-      "/workspace/pip-cache/"
-    ]
 
 # ----------------------------------------------------
 # Step 1 — pre_build (5-minute wait)
 # ----------------------------------------------------
-- name: "gcr.io/cloud-builders/bash"
+- name: "gcr.io/cloud-builders/gcloud"  # <--- CHANGED
   entrypoint: "bash"
   args:
     - "-c"
@@ -43,7 +33,7 @@ steps:
 # ----------------------------------------------------
 # Step 3 — post_build
 # ----------------------------------------------------
-- name: "gcr.io/cloud-builders/bash"
+- name: "gcr.io/cloud-builders/gcloud" # <--- CHANGED
   entrypoint: "bash"
   args:
     - "-c"
