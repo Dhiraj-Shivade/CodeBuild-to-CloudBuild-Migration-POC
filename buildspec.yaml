@@ -1,6 +1,13 @@
 steps:
+
 # ----------------------------------------------------
-# Step 0 — Restore pip cache from GCS
+# Step 1 : Create the local cache directory
+# ----------------------------------------------------
+- name: "gcr.io/cloud-builders/gcloud"  # Use gcloud builder for shell commands
+  args: ["mkdir", "-p", "/workspace/pip-cache"]
+
+# ----------------------------------------------------
+# Step 1 — Restore pip cache from GCS (Now this step will work)
 # ----------------------------------------------------
 - name: gcr.io/cloud-builders/gsutil
   args:
@@ -11,7 +18,7 @@ steps:
     ]
 
 # ----------------------------------------------------
-# Step 1 — install & run
+# Step 2 — install & run
 # ----------------------------------------------------
 - name: "python:3.11"
   entrypoint: "bash"
@@ -22,7 +29,7 @@ steps:
         python3 run.py
 
 # ----------------------------------------------------
-# Step 2 — post_build
+# Step 3 — post_build
 # ----------------------------------------------------
 - name: "gcr.io/cloud-builders/gcloud" # <--- FIXED from 'bash'
   entrypoint: "bash"
@@ -32,7 +39,7 @@ steps:
         ls
 
 # ----------------------------------------------------
-# Step 3 — Store updated cache back to GCS
+# Step 4 — Store updated cache back to GCS
 # ----------------------------------------------------
 - name: gcr.io/cloud-builders/gsutil
   args:
@@ -43,7 +50,7 @@ steps:
     ]
 
 # ----------------------------------------------------
-# New Step 4 — Upload Primary Artifacts (Preserves directory structure)
+# Step 5 — Upload Primary Artifacts (Preserves directory structure)
 # ----------------------------------------------------
 - name: gcr.io/cloud-builders/gsutil
   args:
@@ -55,7 +62,7 @@ steps:
     ]
 
 # ----------------------------------------------------
-# New Step 5 — Upload Secondary Artifact (result.json)
+# Step 6 — Upload Secondary Artifact (result.json)
 # ----------------------------------------------------
 - name: gcr.io/cloud-builders/gsutil
   args:
