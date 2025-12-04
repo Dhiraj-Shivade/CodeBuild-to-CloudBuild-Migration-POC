@@ -1,0 +1,61 @@
+steps:
+# ----------------------------------------------------
+# Step 0 — Restore pip cache from GCS
+# ----------------------------------------------------
+- name: gcr.io/cloud-builders/gsutil
+  args:
+    [
+      "rsync", "-r",
+      "gs://bucket-pip-cache/pip/",
+      "/workspace/pip-cache/"
+    ]
+
+# ----------------------------------------------------
+# Step 1 — install & run
+# ----------------------------------------------------
+- name: "python:3.11"
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |
+        pip install --cache-dir /workspace/pip-cache -r requirements.txt
+        python3 run.py
+
+# ----------------------------------------------------
+# Step 2 — post_build
+# ----------------------------------------------------
+- name: "gcr.io/cloud-builders/bash"
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |
+        ls
+
+# ----------------------------------------------------
+# Step 3 — Store updated cache back to GCS
+# ----------------------------------------------------
+- name: gcr.io/cloud-builders/gsutil
+  args:
+    [
+      "rsync", "-r",
+      "/workspace/pip-cache/",
+      "gs://bucket-pip-cache/pip/"
+    ]
+
+# ----------------------------------------------------
+# ARTIFACTS
+# ----------------------------------------------------
+artifacts:
+  objects:
+    location: "gs://demo-artifact-bucket/main-artifacts/"
+    paths:
+      - "frame_data/*"
+      - "frame_data/frames/*"
+      - "frame_data/predict/*"
+
+  secondary-artifacts:
+    videoFrames:
+      objects:
+        location: "gs://demo-artifact-bucket/videoFrames/"
+        paths:
+          - "result.json"
