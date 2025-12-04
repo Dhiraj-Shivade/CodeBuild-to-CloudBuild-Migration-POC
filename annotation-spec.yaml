@@ -53,12 +53,14 @@ steps:
     ]
 
 # ----------------------------------------------------
-# ARTIFACTS
+# STEP 5 — Upload Artifacts with Directory Structure Preserved
 # ----------------------------------------------------
-artifacts:
-  objects:
-    location: "gs://demo-artifact-bucket/annotation-artifacts/"
-    paths:
-      - "annotation-pipeline/frames/*"
-      - "annotation-pipeline/predict/*"
-      - "annotation-pipeline/inspection.csv"
+- name: gcr.io/cloud-builders/gsutil
+  args:
+    [
+      "cp", "-R",
+      "annotation-pipeline/frames",    # Source: the frames directory
+      "annotation-pipeline/predict",   # Source: the predict directory
+      "annotation-pipeline/inspection.csv", # Source: the CSV file
+      "gs://demo-artifact-bucket/annotation-artifacts/" # Destination: the base GCS path
+    ]
