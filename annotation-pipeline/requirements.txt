@@ -1,0 +1,5 @@
+# annotation-pipeline/requirements.txt
+# Dependencies specific to the annotation process
+opencv-python
+scikit-image
+# If your annotation-pipeline logic is different from run.py, use its specific dependencies here
