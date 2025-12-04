@@ -1,0 +1,74 @@
+steps:
+# ----------------------------------------------------
+# Step 0 — Restore pip cache from GCS
+# ----------------------------------------------------
+- name: gcr.io/cloud-builders/gsutil
+  args:
+    [
+      "rsync", "-r",
+      "gs://bucket-pip-cache/pip/",
+      "/workspace/pip-cache/"
+    ]
+
+# ----------------------------------------------------
+# Step 1 — pre_build (5-minute wait)
+# ----------------------------------------------------
+- name: "gcr.io/cloud-builders/bash"
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |
+        echo "Waiting for 5 minutes before running the build phase..."
+        sleep 300
+
+# ----------------------------------------------------
+# Step 2 — build
+# ----------------------------------------------------
+- name: "python:3.11"
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |
+        cd annotation-pipeline
+
+        # Install ffmpeg (yum → apt fallback)
+        (yum install -y ffmpeg || apt-get update && apt-get install -y ffmpeg) || echo "ffmpeg install skipped"
+
+        # Install Python deps using our cached wheels
+        pip install --cache-dir /workspace/pip-cache -r requirements.txt
+
+        # Run your pipeline
+        python3 annotations.py
+
+# ----------------------------------------------------
+# Step 3 — post_build
+# ----------------------------------------------------
+- name: "gcr.io/cloud-builders/bash"
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |
+        echo "Listing outputs..."
+        ls -R annotation-pipeline/predict/
+
+# ----------------------------------------------------
+# Step 4 — Upload updated pip cache back to GCS
+# ----------------------------------------------------
+- name: gcr.io/cloud-builders/gsutil
+  args:
+    [
+      "rsync", "-r",
+      "/workspace/pip-cache/",
+      "gs://bucket-pip-cache/pip/"
+    ]
+
+# ----------------------------------------------------
+# ARTIFACTS
+# ----------------------------------------------------
+artifacts:
+  objects:
+    location: "gs://demo-artifact-bucket/annotation-artifacts/"
+    paths:
+      - "annotation-pipeline/frames/*"
+      - "annotation-pipeline/predict/*"
+      - "annotation-pipeline/inspection.csv"
