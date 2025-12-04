@@ -1,14 +1,4 @@
 steps:
-# ----------------------------------------------------
-# Step 0 — Restore pip cache from GCS
-# ----------------------------------------------------
-- name: gcr.io/cloud-builders/gsutil
-  args:
-    [
-      "rsync", "-r",
-      "gs://bucket-pip-cache/pip/",
-      "/workspace/pip-cache/"
-    ]
 
 # ----------------------------------------------------
 # Step 1 — pre_build (5-minute wait)
