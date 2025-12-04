@@ -62,5 +62,5 @@ steps:
       "annotation-pipeline/frames",    # Source: the frames directory
       "annotation-pipeline/predict",   # Source: the predict directory
       "annotation-pipeline/inspection.csv", # Source: the CSV file
-      "gs://demo-artifact-bucket/annotation-artifacts/" # Destination: the base GCS path
+      "gs://demo-artifact-bucket/annotation-pipeline/" # Destination: the base GCS path
     ]
