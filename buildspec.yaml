@@ -24,7 +24,7 @@ steps:
 # ----------------------------------------------------
 # Step 2 — post_build
 # ----------------------------------------------------
-- name: "gcr.io/cloud-builders/bash"
+- name: "gcr.io/cloud-builders/gcloud" # <--- FIXED from 'bash'
   entrypoint: "bash"
   args:
     - "-c"
@@ -43,19 +43,27 @@ steps:
     ]
 
 # ----------------------------------------------------
-# ARTIFACTS
+# New Step 4 — Upload Primary Artifacts (Preserves directory structure)
 # ----------------------------------------------------
-artifacts:
-  objects:
-    location: "gs://demo-artifact-bucket/main-artifacts/"
-    paths:
-      - "frame_data/*"
-      - "frame_data/frames/*"
-      - "frame_data/predict/*"
+- name: gcr.io/cloud-builders/gsutil
+  args:
+    [
+      "cp", "-R",
+      "frame_data/frames",
+      "frame_data/predict",
+      "gs://demo-artifact-bucket/main-artifacts/frame_data"
+    ]
 
-  secondary-artifacts:
-    videoFrames:
-      objects:
-        location: "gs://demo-artifact-bucket/videoFrames/"
-        paths:
-          - "result.json"
+# ----------------------------------------------------
+# New Step 5 — Upload Secondary Artifact (result.json)
+# ----------------------------------------------------
+- name: gcr.io/cloud-builders/gsutil
+  args:
+    [
+      "cp",
+      "result.json",
+      "gs://demo-artifact-bucket/videoFrames/"
+    ]
+
+
+
