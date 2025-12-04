@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+  build:
+    commands:
+      - pip install -r requirements.txt
+      - python3 run.py
+  post_build:
+    commands:
+      - ls
+cache:
+  paths:
+    - '/root/.cache/pip/**/*'
+artifacts:
+  files:
+    - frame_data/*
+    - frame_data/frames/*
+    - frame_data/predict/*
+  name: artifacts
+  secondary-artifacts:
+    videoFrames:
+      files:
+        - result.json
