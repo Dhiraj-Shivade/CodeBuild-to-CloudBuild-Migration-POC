@@ -60,9 +60,10 @@ steps:
   args:
     [
       "cp", "-R",
+      "frame_data/",
       "frame_data/frames",
       "frame_data/predict",
-      "gs://demo-artifact-bucket/main-artifacts/frame_data"
+      "gs://demo-artifact-bucket/frame_data"
     ]
 
 # ----------------------------------------------------
